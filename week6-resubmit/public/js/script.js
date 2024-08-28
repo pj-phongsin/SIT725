@@ -27,7 +27,7 @@ $(document).ready(() => {
 
         $.ajax({
             url: `http://localhost:3040/getMoviesByYear?startYear=${startYear}&endYear=${endYear}`,
-            type: 'POST',
+            type: 'GET',
             success: (data) => {
                 let moviesHtml = '<ul>';
                 data.data.forEach(movie => {

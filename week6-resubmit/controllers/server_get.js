@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require('path');
 const app = express();
 const { MongoClient } = require('mongodb');
 
@@ -6,8 +7,14 @@ const uri = "mongodb+srv://jphongsin:xa7jjaPBiQm3t1PC@cluster0.gsqsjgi.mongodb.n
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 let database;
 
-app.use(express.static('public'));
+// Serve static files from 'public' directory
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
+
+// Serve index.html from 'views' directory
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'views', 'index.html'));
+});
 
 const addTwoNumber = (n1, n2) => {
     return n1 + n2;
@@ -35,12 +42,12 @@ app.get("/Display", (req, res) => {
     res.send(Buffer.from(n1));
 });
 
-app.post("/getMoviesByYear", async (req, res) => {
+app.get("/getMoviesByYear", async (req, res) => {
     const startYear = parseInt(req.query.startYear);
     const endYear = parseInt(req.query.endYear);
 
-    if (isNaN(startYear) || isNaN(endYear)) {
-        return res.json({ statusCode: 400, message: "Invalid year range" });
+    if (isNaN(startYear) || isNaN(endYear) || startYear > endYear) {
+        return res.status(400).json({ statusCode: 400, message: "Invalid year range" });
     }
 
     try {
